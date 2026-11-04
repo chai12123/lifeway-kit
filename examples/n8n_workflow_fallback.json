@@ -1,0 +1,512 @@
+{
+  "name": "LifeWay HD Report – Bodygraph + Claude + PDF + Email",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "สั่งทำรายงาน Human Design ฉบับเต็ม",
+        "formDescription": "กรอกข้อมูลการเกิดให้ครบ รายงาน PDF จะส่งไปที่อีเมลภายในประมาณ 15 นาที",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "ชื่อ",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "อีเมล",
+              "fieldType": "email",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "วันเกิด",
+              "fieldType": "date",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "เวลาเกิด (24 ชม. เช่น 21:08)",
+              "placeholder": "21:08",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "เมืองเกิด",
+              "placeholder": "Bangkok",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "buttonLabel": "สั่งทำรายงาน"
+        }
+      },
+      "id": "3dcebc35-b0b5-4c2b-812d-f9c10189b27b",
+      "name": "รับข้อมูลลูกค้า",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        300
+      ],
+      "webhookId": "26e34bbb-9789-4546-8f1c-2d1b3d9b6511"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fcf14a86-3d86-47bc-8add-436f0bfb74e0",
+              "name": "systemPrompt",
+              "value": "คุณคือนักเขียนรายงาน Human Design มืออาชีพ เขียนภาษาไทยสำหรับผู้อ่านทั่วไป\n\nกติกาน้ำเสียง (บังคับทุกบท)\n- เรียกผู้อ่านว่า \"คุณ\" ตลอด ไม่ระบุชื่อ ไม่ระบุเพศ ไม่สมมติอาชีพ\n- ภาษาไทยที่คนทั่วไปอ่านรู้เรื่อง อบอุ่น ตรงไปตรงมา เหมือนที่ปรึกษาที่รู้จริงนั่งคุยด้วย ไม่ใช่ตำรา ไม่ใช่โหราศาสตร์ลึกลับ\n- ใช้ศัพท์ HD ภาษาอังกฤษได้ (Manifestor, Authority, Gate) แต่ครั้งแรกที่ใช้ในบทต้องอธิบายเป็นภาษาคนทันที\n- ห้ามคำว่า \"ครับ/ค่ะ\" ห้าม emoji ห้ามเส้นคั่น ห้าม bold/italic ห้าม bullet เยอะ เขียนเป็นย่อหน้าร้อยเรียง\n- ทุกประเด็นต้องมี 3 ชั้น: (1) ความหมายในชาร์ท (2) ปรากฏในชีวิตจริงยังไง ยกฉากสถานการณ์ให้เห็นภาพ (งาน เงิน ความสัมพันธ์ ครอบครัว) (3) ทำยังไงกับมัน คำแนะนำที่ลงมือได้\n- เชื่อมโยงกับชาร์ทส่วนอื่นเสมอ ห้ามตัดแปะความหมายทั่วไปโดยไม่โยงกับข้อมูลชาร์ทที่ให้\n- ใช้เฉพาะข้อมูลชาร์ทที่ให้ใน JSON เท่านั้น ห้ามแต่ง gate/channel/center ที่ไม่มีในชาร์ท\n- ไม่ฟันธงเรื่องสุขภาพ การแพทย์ การเงิน/การลงทุน แบบรับประกัน ใช้ \"มีแนวโน้ม\" \"มักจะ\" \"ลองสังเกต\"\n- ไม่เขียนประโยคเปิดแบบ \"ในบทนี้เราจะ...\" เปิดด้วยเนื้อหาเลย\n\nรูปแบบผลลัพธ์ (บังคับ)\n- บรรทัดแรก: # ชื่อบท (ไม่ต้องใส่คำว่า บทที่)\n- หัวข้อย่อยใช้ ## เท่านั้น 4-6 หัวข้อต่อบท\n- ความยาว 1,300-1,600 คำภาษาไทย แน่น ไม่น้ำ\n- ปิดท้ายด้วย ## คำถามให้สำรวจตัวเอง แล้วตามด้วยคำถาม 3 ข้อแบบ 1. 2. 3. ที่เจาะจงกับชาร์ทนี้\n- ตอบเป็นเนื้อหาบทอย่างเดียว ไม่มีคำนำ ไม่มีคำอธิบายเพิ่ม",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "id": "bfd59623-4c76-468a-954f-7cb52a67a925",
+      "name": "ตั้งค่า Prompt",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.bodygraphchart.com/v210502/locations",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $('รับข้อมูลลูกค้า').item.json['เมืองเกิด'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "75510eae-f407-4676-bcdd-de68fcc7a310",
+      "name": "หา timezone จากเมืองเกิด",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 3000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// เตรียมพารามิเตอร์สำหรับ bodygraph API\nconst form = $('รับข้อมูลลูกค้า').first().json;\nconst loc = $input.first().json;\nconst list = Array.isArray(loc) ? loc : (loc.data || loc.results || []);\nconst tz = (list[0] && list[0].timezone) ? list[0].timezone : 'Asia/Bangkok';\nconst placeName = (list[0] && list[0].value) ? list[0].value : form['เมืองเกิด'];\n\n// วันเกิดจากฟอร์ม (YYYY-MM-DD) + เวลา HH:MM\nlet date = String(form['วันเกิด']).slice(0,10);\nlet time = String(form['เวลาเกิด (24 ชม. เช่น 21:08)'] || '12:00').trim().replace('.',':');\nif (/^\\d{1,2}:\\d{2}$/.test(time) === false) time = '12:00';\nif (time.length === 4) time = '0' + time;\n\nreturn [{ json: {\n  name: form['ชื่อ'],\n  email: form['อีเมล'],\n  birthDate: date,\n  birthTime: time,\n  birthPlace: placeName,\n  timezone: tz,\n  dateParam: `${date} ${time}`,\n  designName: 'lifeway'   // <-- ชื่อ Chart Design ใน dashboard bodygraph.com ต้องตรงเป๊ะ\n}}];\n"
+      },
+      "id": "620e0767-eff1-4a32-a3d7-e362dac9b102",
+      "name": "เตรียมพารามิเตอร์",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        660,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.bodygraphchart.com/v221006/hd-data",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "date",
+              "value": "={{ $json.dateParam }}"
+            },
+            {
+              "name": "timezone",
+              "value": "={{ $json.timezone }}"
+            },
+            {
+              "name": "design",
+              "value": "={{ $json.designName }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8fcb2b41-1eb1-4aa0-99ba-6b13aff1f379",
+      "name": "ดึงชาร์ท Bodygraph",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        880,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// แยกข้อมูลชาร์ทจาก bodygraph API ให้กะทัดรัดพอส่งให้ Claude\nconst meta = $('เตรียมพารามิเตอร์').first().json;\nconst r = $input.first().json;\nconst P = r.Properties || {};\nconst nameOf = (o) => (o && (o.option || o.id || o.name)) || '';\nconst planets = ['Sun','Earth','North Node','South Node','Moon','Mercury','Venus','Mars','Jupiter','Saturn','Uranus','Neptune','Pluto'];\nconst act = (side) => { const out = {}; planets.forEach(p => { const v = (r[side]||{})[p]; if (v) out[p] = `${v.Gate}.${v.Line}`; }); return out; };\n\n// หา SVG ไม่ว่า key จะเป็น SVG / svg / Svg\nconst svgKey = Object.keys(r).find(k => k.toLowerCase() === 'svg');\nconst svg = svgKey ? r[svgKey] : '';\n\nconst chart = {\n  type: nameOf(P.Type),\n  strategy: nameOf(P.Strategy),\n  authority: nameOf(P.InnerAuthority),\n  profile: nameOf(P.Profile),\n  definition: nameOf(P.Definition),\n  incarnationCross: nameOf(P.IncarnationCross),\n  signature: nameOf(P.Signature),\n  notSelfTheme: nameOf(P.NotSelfTheme),\n  definedCenters: r.DefinedCenters || [],\n  openCenters: r.OpenCenters || [],\n  channels: r.Channels || [],\n  gates: Object.values(r.Gates || {}),\n  personality: act('Personality'),\n  design: act('Design'),\n  birthYear: Number(meta.birthDate.slice(0,4)),\n};\n\nreturn [{ json: { ...meta, chart, chartJson: JSON.stringify(chart), svg } }];\n"
+      },
+      "id": "ae6f0f88-1783-4eb1-b254-eea5d57e8c29",
+      "name": "แยกข้อมูลชาร์ท",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1100,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// สร้างรายการ 14 บท (1 item = 1 บท) แต่ละ item พกข้อมูลชาร์ทไปด้วย\nconst base = $input.first().json;\nconst chapters = [{\"index\": 1, \"title\": \"คุณคือใคร: ภาพรวมของชาร์ทนี้\", \"instructions\": \"เปิดด้วยย่อหน้า \\\"คุณคือใครใน 10 บรรทัด\\\" ที่สังเคราะห์ Type, Authority, Profile, Definition, ศูนย์ที่ defined/open, channels และ Incarnation Cross ของชาร์ทนี้ให้เห็นภาพคนคนหนึ่ง จากนั้นอธิบายว่า Human Design คืออะไร (กำเนิด 1987 สังเคราะห์โหราศาสตร์ อี้จิง คับบาลาห์ จักระ ให้มองเป็นเครื่องมือสำรวจตัวเอง ไม่ใช่วิทยาศาสตร์หรือการทำนาย) วิธีอ่าน bodygraph (ศูนย์ ช่อง gate สีดำ/แดง) ความหมายของ Personality กับ Design แล้วพาเดินดูข้อเท็จจริงหลักของชาร์ทนี้ทีละอย่าง ปิดด้วยวิธีใช้เล่มนี้ (อ่านตามลำดับ ทดลอง 30 วัน ไม่มีอะไรเป็นคำตัดสิน)\"}, {\"index\": 2, \"title\": \"Type และ Strategy ของคุณ\", \"instructions\": \"อธิบาย Type ของชาร์ทนี้อย่างละเอียด: กลไกในชาร์ท (ศูนย์และช่องไหนที่ทำให้เป็น Type นี้ ไล่เส้นทางพลังงานให้เห็น) ออร่าที่คนรอบข้างรู้สึก Strategy ที่ถูกต้องพร้อมสคริปต์ประโยคใช้จริงในที่ทำงาน ครอบครัว และคู่ Signature กับ Not-self theme สัญญาณว่าใช้ชีวิตขัดกับ design ลักษณะพลังงาน (ต่อเนื่องหรือเป็นระลอก ตามว่า Sacral defined หรือไม่) การพักที่เหมาะกับ Type นี้ และ conditioning ในวัยเด็กที่ Type นี้มักเจอพร้อมวิธีถอด\"}, {\"index\": 3, \"title\": \"Authority: วิธีตัดสินใจที่เชื่อถือได้ของคุณ\", \"instructions\": \"อธิบาย Inner Authority ของชาร์ทนี้: กลไกทางร่างกาย ความแตกต่างจากการตัดสินใจด้วยสมอง สิ่งที่ \\\"การรอ\\\" หรือ \\\"การฟัง\\\" หมายถึงในทางปฏิบัติ ความตึงระหว่าง Authority กับ Type ของชาร์ทนี้และวิธีให้เกียรติทั้งสองอย่าง gates ที่เปิดอยู่ในศูนย์ที่เป็น Authority (รวม hanging gates) ว่ามีผลต่อการตัดสินใจอย่างไร พิธีกรรมตัดสินใจที่ใช้ได้จริง และผลเสียเมื่อตัดสินใจผิดวิธี (ยกฉากเรื่องงาน เงิน ความสัมพันธ์)\"}, {\"index\": 4, \"title\": \"Profile: บทบาทที่คุณเล่นในชีวิต\", \"instructions\": \"อธิบาย Profile ของชาร์ทนี้ทีละ line: ความหมายของ line แรก (จิตสำนึก) และ line ที่สอง (กาย/ไร้สำนึก) ว่าทำงานร่วมกันยังไง ปรากฏในงาน ความสัมพันธ์ ชื่อเสียง และวิธีที่คนอื่นมองคุณ กับดักของ Profile นี้ และยุทธศาสตร์ใช้ชีวิตให้ตรง Profile โยงกับ Type และ Authority ของชาร์ทนี้ว่าเมื่อรวมกันแล้วมีจุดแข็งและจุดเสี่ยงตรงไหน\"}, {\"index\": 5, \"title\": \"ศูนย์ที่มั่นคงในตัวคุณ\", \"instructions\": \"อธิบาย Definition ของชาร์ทนี้ (Single/Split/Triple/Quad) ว่าหมายถึงอะไรในชีวิตจริง จากนั้นอธิบายศูนย์ที่ defined ทีละศูนย์ตามที่มีจริงในชาร์ท: หน้าที่ของศูนย์ gates ที่เปิดอยู่ในศูนย์นั้นและความหมาย สิ่งที่ศูนย์นี้ให้คุณอย่างสม่ำเสมอ ปรากฏในชีวิตยังไง และจุดที่มันทำให้คุณสะดุด (ถ้าชาร์ทไม่มีศูนย์ defined เลย ให้อธิบายความหมายของ Reflector แทน)\"}, {\"index\": 6, \"title\": \"ศูนย์ที่เปิด: ที่ที่คุณรับโลกเข้ามา\", \"instructions\": \"อธิบายแนวคิดศูนย์เปิด (ขยายพลังของคนอื่น เป็นที่รับ conditioning และเป็นแหล่งปัญญาตลอดชีวิต) แล้วอธิบายศูนย์ที่ open ทีละศูนย์ตามที่มีจริงในชาร์ท พร้อมคำถาม Not-self ของแต่ละศูนย์ hanging gates ที่อยู่ในศูนย์เปิดและความหมาย ความเสี่ยงเฉพาะของชุดศูนย์เปิดในชาร์ทนี้ (เช่น ถ้า Sacral และ Root เปิดทั้งคู่ เสี่ยง burnout จากการเลียนแบบความอึดของคนอื่น) และโปรโตคอลปฏิบัติจริง\"}, {\"index\": 7, \"title\": \"ช่องทางพลังของคุณ\", \"instructions\": \"อธิบาย channels ที่ defined ทุกช่องในชาร์ทนี้ทีละช่อง: ชื่อช่อง วงจร (individual/tribal/collective/integration) ความหมายเชิงลึก ปรากฏในชีวิตยังไง ของขวัญและกับดัก แล้วปิดด้วยการสังเคราะห์ว่าช่องทั้งหมดรวมกันบรรยายคนคนหนึ่งอย่างไร (ถ้าชาร์ทไม่มี channel เลย ให้อธิบาย hanging gates ที่สำคัญที่สุด 4-5 gate แทน)\"}, {\"index\": 8, \"title\": \"ประตูที่กำหนดเรื่องราวของคุณ: Sun, Earth, Moon และ Nodes\", \"instructions\": \"อธิบาย Personality Sun และ Earth, Design Sun และ Earth (gate และ line) ว่าเป็นธีมหลักของบุคลิกและร่างกาย Moon ทั้งสองฝั่ง และ North/South Node ทั้งสองฝั่ง โดยอธิบาย Nodes ว่าเป็นสภาพแวดล้อมชีวิตที่เปลี่ยนราวอายุ 38-42 จากธีม South Node สู่ North Node (คำนวณช่วงปีจากปีเกิดในข้อมูล) อธิบายแต่ละ gate/line เป็นภาษาคนพร้อมฉากชีวิต รักษาความหมายตามอี้จิง/HD ให้ถูกต้อง ปิดด้วยย่อหน้าสั้นเรื่องดาวที่เหลือในฐานะตัวประกอบ\"}, {\"index\": 9, \"title\": \"Incarnation Cross: ธีมชีวิตของคุณ\", \"instructions\": \"อธิบายว่า Incarnation Cross คืออะไร (4 gates ของ Sun/Earth ทั้งสองฝั่ง ราว 70% ของพลังชาร์ท เป็นธีมชีวิตไม่ใช่คำบรรยายอาชีพ) ความหมายของมุม Right Angle / Juxtaposition / Left Angle ที่ชาร์ทนี้เป็น อธิบายชื่อ cross และ gates ทั้งสี่ว่าประกอบเป็นธีมเดียวกันอย่างไร ธีมนี้คลี่คลายตามช่วงชีวิตอย่างไรเมื่อผสมกับ Profile และ Type ของชาร์ทนี้ กับดักของ cross นี้ และวิธีใช้ชีวิตตามธีมนี้แบบรายสัปดาห์\"}, {\"index\": 10, \"title\": \"งานและอาชีพ: ตำแหน่งที่พลังของคุณทำงานได้เต็มที่\", \"instructions\": \"สังเคราะห์ทั้งชาร์ทเป็นคำแนะนำอาชีพ: Type (ควรเริ่ม/ตอบสนอง/รอคำเชิญ/สะท้อน), Authority (จังหวะรับงาน ลาออก เซ็นสัญญา), Profile, channels และ gates เด่น, ศูนย์เปิด (งานที่ดูดพลัง) ให้ role archetypes ที่เหมาะและที่ควรเลี่ยงอย่างเป็นรูปธรรม มีชุดประโยคที่ควรใช้ในที่ทำงานตาม Strategy ของชาร์ทนี้ และรายการสัญญาณว่าอยู่ผิดที่\"}, {\"index\": 11, \"title\": \"เงินและธุรกิจ: จังหวะของการให้และการได้รับ\", \"instructions\": \"มองเรื่องเงินผ่านชาร์ทนี้: ศูนย์ Heart (defined หรือ open) กับเรื่องคุณค่าและคำสัญญา, ศูนย์ Solar Plexus/Sacral/Spleen กับการตัดสินใจเรื่องเงิน, Type กับการเริ่มธุรกิจ, Profile กับการลองผิดลองถูก, channels/gates ที่เกี่ยวกับทรัพยากร ข้อตกลง ความทะเยอทะยาน โฟกัส ให้กฎเงินที่ใช้ได้จริงสำหรับชาร์ทนี้ (เช่น กฎรอกี่วันก่อนใช้จ่ายก้อนใหญ่ การเขียนข้อตกลง) พูดเป็นหลักการ ไม่ให้คำแนะนำการลงทุนเฉพาะเจาะจง\"}, {\"index\": 12, \"title\": \"ความสัมพันธ์: รักในแบบที่ออกแบบมา\", \"instructions\": \"ความสัมพันธ์ผ่านชาร์ทนี้: ออร่าของ Type ในความรัก, Authority กับการตัดสินใจเรื่องคู่ (ผูกมัด เลิก คุยเรื่องใหญ่), channels และ gates ที่เกี่ยวกับความใกล้ชิด ครอบครัว ข้อตกลง ความต้องการพื้นที่ส่วนตัว, ศูนย์เปิดที่ทำให้ยึดติดหรือเลียนแบบคู่, Profile กับรูปแบบการเรียนรู้ความสัมพันธ์ แนะนำว่าคู่แต่ละ Type (Generator, Projector, Manifestor, Reflector) จะสัมผัสคุณอย่างไร คำแนะนำเรื่องการเลี้ยงลูก/ครอบครัว และมิตรภาพ พร้อมประโยคที่ช่วยได้\"}, {\"index\": 13, \"title\": \"สุขภาพ พลังงาน และศิลปะของการพัก\", \"instructions\": \"การจัดการพลังงานตามชาร์ทนี้: ลักษณะพลังงานจาก Sacral และ Root (defined/open), การนอนตามคำแนะนำ HD สำหรับศูนย์เปิด, ศูนย์ Spleen กับภูมิคุ้มกันและการปล่อยวาง, ศูนย์ Solar Plexus กับร่างกาย, Heart กับการบังคับตัวเอง, gates ที่เกี่ยวกับร่างกายและจังหวะ ให้ template พลังงานรายสัปดาห์ที่เป็นรูปธรรม ใช้ภาษาระวัง และระบุครั้งเดียวว่านี่ไม่ใช่คำแนะนำทางการแพทย์ อาการต่อเนื่องควรพบแพทย์\"}, {\"index\": 14, \"title\": \"แผน 30 วัน: ทดลองใช้ชีวิตตาม Design ของคุณ\", \"instructions\": \"แผนทดลอง 30 วันแบ่ง 4 สัปดาห์ตามชาร์ทนี้: สัปดาห์ 1 ฝึก Strategy, สัปดาห์ 2 ฝึก Authority, สัปดาห์ 3 จัดการพลังงาน/ศูนย์เปิด, สัปดาห์ 4 ธีม Incarnation Cross และขอบเขตในความสัมพันธ์ แต่ละสัปดาห์มีการปฏิบัติรายวัน สิ่งที่ต้องสังเกต และคำถามบันทึกสั้นๆ จากนั้นมีหัวข้อ ## สิ่งที่อยากให้คุณจำไว้ เป็นบทปิดอบอุ่นประมาณ 300 คำที่สังเคราะห์ทั้งชาร์ท และย้ำว่านี่คือแผนที่สำหรับทดลอง ไม่ใช่คำตัดสิน ก่อนคำถาม 3 ข้อท้ายบท\"}];\nreturn chapters.map(c => ({ json: { ...c, chartJson: base.chartJson, name: base.name, email: base.email } }));\n"
+      },
+      "id": "465b2377-9327-47e3-b2a5-3965c2201391",
+      "name": "สร้างรายการ 14 บท",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1320,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.anthropic.com/v1/messages",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "anthropic-version",
+              "value": "2023-06-01"
+            },
+            {
+              "name": "content-type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({\n  model: 'claude-sonnet-5-5',\n  max_tokens: 7000,\n  temperature: 0.7,\n  system: $('ตั้งค่า Prompt').first().json.systemPrompt,\n  messages: [{ role: 'user', content:\n    'เขียนบทที่ ' + $json.index + ' ชื่อบท: ' + $json.title + '\\n\\nสิ่งที่บทนี้ต้องครอบคลุม:\\n' + $json.instructions +\n    '\\n\\nข้อมูลชาร์ทของผู้อ่าน (JSON):\\n' + $json.chartJson +\n    '\\n\\nเขียนบทนี้ตามกติกาใน system prompt เริ่มบรรทัดแรกด้วย # ' + $json.title }]\n}) }}",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 1,
+              "batchInterval": 2000
+            }
+          },
+          "timeout": 600000
+        }
+      },
+      "id": "e9a0d552-db88-40d1-8394-90f35aa4a79d",
+      "name": "Claude เขียนบท",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1540,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 3,
+      "waitBetweenTries": 10000
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "\n// ดึงข้อความบทจาก response ของ Claude และผูกกับข้อมูลบท\nconst req = $('สร้างรายการ 14 บท').item.json;\nconst res = $input.item.json;\nconst text = (res.content || []).filter(p => p.type === 'text').map(p => p.text).join('\\n');\nreturn { json: { chapter: { index: req.index, title: req.title }, text } };\n"
+      },
+      "id": "b9f3294a-1021-4e34-b4ec-79739041a379",
+      "name": "ดึงข้อความบท",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1760,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "\n// รวมบททั้งหมดเป็น HTML เล่มเดียว (A4, ฟอนต์ Sarabun) พร้อมหน้าปกและหน้าชาร์ท\nconst items = $input.all().map(i => i.json).sort((a,b) => a.chapter.index - b.chapter.index);\nconst meta = $('แยกข้อมูลชาร์ท').first().json;\nconst c = meta.chart;\nconst esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');\n\nfunction mdToHtml(md) {\n  const lines = md.split('\\n'); let html = ''; let inOl = false;\n  for (let raw of lines) {\n    const s = raw.trim();\n    if (!s) continue;\n    if (s.startsWith('# ')) continue;                       // ชื่อบทใส่แยกต่างหาก\n    const ol = s.match(/^(\\d+)[\\.\\)]\\s+(.*)/);\n    if (ol) { if (!inOl) { html += '<ol>'; inOl = true; } html += `<li>${esc(ol[2])}</li>`; continue; }\n    if (inOl) { html += '</ol>'; inOl = false; }\n    if (s.startsWith('## ')) { html += `<h2>${esc(s.slice(3))}</h2>`; continue; }\n    html += `<p>${esc(s.replace(/\\*\\*/g,''))}</p>`;\n  }\n  if (inOl) html += '</ol>';\n  return html;\n}\n\nconst toc = items.map(it => `<li>บทที่ ${it.chapter.index} &nbsp; ${esc(it.chapter.title)}</li>`).join('');\nconst planetRows = Object.keys(c.personality).map(p => `<tr><td>${p}</td><td>${c.personality[p]}</td><td class=\"red\">${c.design[p]||''}</td></tr>`).join('');\n\nlet body = '';\nitems.forEach(it => {\n  body += `<section class=\"chapter\"><div class=\"chnum\">บทที่ ${it.chapter.index}</div><h1>${esc(it.chapter.title)}</h1>${mdToHtml(it.text)}</section>`;\n});\n\nconst html = `<!doctype html><html lang=\"th\"><head><meta charset=\"utf-8\">\n<link href=\"https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap\" rel=\"stylesheet\">\n<style>\n@page { size: A4; margin: 22mm 22mm 22mm 26mm; }\nbody { font-family: 'Sarabun', sans-serif; font-size: 13.5pt; line-height: 1.5; color: #2b2b2b; }\n.cover { height: 240mm; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; page-break-after: always; }\n.cover .eyebrow { color: #B88A2E; letter-spacing: 3px; font-size: 14pt; }\n.cover h1 { font-size: 34pt; margin: 8px 0; color: #1E2A33; }\n.cover .sub { color: #1F6F78; font-size: 16pt; }\n.cover .meta { color: #777; margin-top: 30px; font-size: 12pt; }\n.chartpage { page-break-after: always; text-align: center; }\n.chartpage svg, .chartpage img { max-width: 150mm; max-height: 200mm; }\ntable { border-collapse: collapse; width: 100%; font-size: 11.5pt; margin: 8px 0 16px; }\ntd, th { border: 1px solid #ddd; padding: 4px 8px; text-align: left; }\nth { background: #EAF2F3; color: #1F6F78; }\ntd.red { color: #D23B3B; }\n.toc { page-break-after: always; } .toc li { list-style: none; margin: 6px 0; }\n.chapter { page-break-before: always; }\n.chnum { color: #B88A2E; font-weight: bold; }\nh1 { font-size: 26pt; color: #1E2A33; margin: 2px 0 14px; line-height: 1.2; }\nh2 { font-size: 17pt; color: #1F6F78; margin: 20px 0 8px; }\np { text-align: justify; margin: 0 0 9px; text-indent: 0; }\nol li { margin: 4px 0; }\n.note { color: #777; font-size: 12pt; }\n</style></head><body>\n<div class=\"cover\"><div class=\"eyebrow\">HUMAN DESIGN</div><h1>รายงานการออกแบบชีวิตฉบับเต็ม</h1>\n<div class=\"sub\">${esc(c.type)} · Profile ${esc(c.profile)} · ${esc(c.authority)} Authority</div>\n<div class=\"meta\">จัดทำสำหรับ ${esc(meta.name)}<br>เกิดวันที่ ${esc(meta.birthDate)} เวลา ${esc(meta.birthTime)} ${esc(meta.birthPlace)}<br>${esc(c.incarnationCross)}</div></div>\n<div class=\"chartpage\"><h1>ชาร์ทของคุณ</h1>${meta.svg || '<p class=\"note\">(ไม่พบ SVG จาก API ตรวจชื่อ design)</p>'}\n<table><tr><th>Type</th><td>${esc(c.type)}</td><th>Strategy</th><td>${esc(c.strategy)}</td></tr>\n<tr><th>Authority</th><td>${esc(c.authority)}</td><th>Profile</th><td>${esc(c.profile)}</td></tr>\n<tr><th>Definition</th><td>${esc(c.definition)}</td><th>Cross</th><td>${esc(c.incarnationCross)}</td></tr>\n<tr><th>Defined</th><td>${esc(c.definedCenters.join(', '))}</td><th>Open</th><td>${esc(c.openCenters.join(', '))}</td></tr>\n<tr><th>Channels</th><td colspan=\"3\">${esc(c.channels.join(' · '))}</td></tr></table>\n<table><tr><th>ดาว</th><th>Personality</th><th>Design</th></tr>${planetRows}</table></div>\n<div class=\"toc\"><h1>สารบัญ</h1><ul>${toc}</ul></div>\n${body}\n<section class=\"chapter\"><h1>หมายเหตุ</h1><p class=\"note\">รายงานฉบับนี้คำนวณจากตำแหน่งดาว ณ วันเวลาเกิด และเรียบเรียงเนื้อหาโดยระบบปัญญาประดิษฐ์ตามหลักการของระบบ Human Design เนื้อหาทั้งหมดมีไว้เพื่อการสำรวจและทำความเข้าใจตนเอง ไม่ใช่คำวินิจฉัยทางการแพทย์ จิตวิทยา กฎหมาย หรือการเงิน การตัดสินใจใดๆ ยังคงเป็นของคุณ</p></section>\n</body></html>`;\n\nreturn [{ json: { html, name: meta.name, email: meta.email, type: c.type, profile: c.profile, authority: c.authority } }];\n"
+      },
+      "id": "483c6d17-9055-4cb8-bb3c-cfd06579705a",
+      "name": "รวมเล่มเป็น HTML",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1980,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.pdfshift.io/v3/convert/pdf",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ source: $json.html, format: 'A4', use_print: true, delay: 1500 }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          },
+          "timeout": 300000
+        }
+      },
+      "id": "10785f8d-a147-40b0-998d-d54590a69db2",
+      "name": "แปลง HTML เป็น PDF",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2200,
+        300
+      ],
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('รวมเล่มเป็น HTML').item.json.email }}",
+        "subject": "=รายงาน Human Design ฉบับเต็มของคุณ {{ $('รวมเล่มเป็น HTML').item.json.name }}",
+        "emailType": "html",
+        "message": "=<p>สวัสดีคุณ {{ $('รวมเล่มเป็น HTML').item.json.name }}</p><p>รายงาน Human Design ฉบับเต็มของคุณพร้อมแล้ว (แนบเป็นไฟล์ PDF) ชาร์ทของคุณคือ <b>{{ $('รวมเล่มเป็น HTML').item.json.type }} · Profile {{ $('รวมเล่มเป็น HTML').item.json.profile }} · {{ $('รวมเล่มเป็น HTML').item.json.authority }} Authority</b></p><p>แนะนำให้อ่านตามลำดับบท และลองทำแผน 30 วันท้ายเล่ม หากมีคำถามตอบกลับอีเมลนี้ได้เลย</p>",
+        "options": {
+          "attachmentsUi": {
+            "attachmentsBinary": [
+              {
+                "property": "data"
+              }
+            ]
+          },
+          "appendAttribution": false
+        }
+      },
+      "id": "052d8fd5-0a53-449e-8ed2-a71e5d6ae070",
+      "name": "ส่งอีเมลลูกค้า",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2420,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "วันที่": "={{ $now.toFormat('yyyy-MM-dd HH:mm') }}",
+            "ชื่อ": "={{ $('รวมเล่มเป็น HTML').item.json.name }}",
+            "อีเมล": "={{ $('รวมเล่มเป็น HTML').item.json.email }}",
+            "Type": "={{ $('รวมเล่มเป็น HTML').item.json.type }}",
+            "Profile": "={{ $('รวมเล่มเป็น HTML').item.json.profile }}",
+            "สถานะ": "ส่งแล้ว"
+          }
+        },
+        "options": {}
+      },
+      "id": "80a14352-0ca5-409e-825e-3913fe76961e",
+      "name": "บันทึกออเดอร์",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.5,
+      "position": [
+        2640,
+        300
+      ],
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "width": 900,
+        "height": 300,
+        "content": "## Human Design Report Automation (MiB)\n\n**Credentials ที่ต้องสร้าง 4 อัน (Settings → Credentials)**\n1. **Query Auth** ชื่อ `Bodygraph api_key` → Name: `api_key` Value: key จาก bodygraph.com → ใส่ที่ 2 node: หา timezone, ดึงชาร์ท\n2. **Header Auth** ชื่อ `Anthropic` → Name: `x-api-key` Value: key จาก console.anthropic.com → ใส่ที่ node Claude เขียนบท\n3. **Basic Auth** ชื่อ `PDFShift` → User: `api` Password: key จาก pdfshift.io → ใส่ที่ node แปลง HTML เป็น PDF\n4. **Gmail OAuth2** + **Google Sheets OAuth2** (เลือก Sheet ออเดอร์ใน node บันทึกออเดอร์ หรือลบ node นี้ทิ้งได้)\n\n**ต้องแก้ 1 จุด:** ใน node `เตรียมพารามิเตอร์` เปลี่ยน `designName` ให้ตรงชื่อ Chart Design ที่ตั้งไว้ใน bodygraph.com\n\n**ทดสอบ:** กด Test workflow → เปิดฟอร์ม → กรอกวันเกิดตัวเอง → รอประมาณ 10-15 นาที (Claude เขียน 14 บททีละบท)\n\nต้นทุนต่อเล่มโดยประมาณ: bodygraph < 1 บาท · Claude Sonnet 20-40 บาท · PDFShift < 1 บาท"
+      },
+      "id": "2575a4d2-7574-40bc-9511-c0e79926ced2",
+      "name": "📌 วิธีตั้งค่า",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        0,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "width": 380,
+        "height": 160,
+        "content": "ถ้า self-host n8n และมี Gotenberg: เปลี่ยน node แปลง PDF เป็น POST `http://gotenberg:3000/forms/chromium/convert/html` ส่ง html เป็นไฟล์ชื่อ index.html (multipart) ไม่ต้องใช้ PDFShift"
+      },
+      "id": "bc853695-f9c9-4269-b69e-303ca8c363a7",
+      "name": "📌 ถ้าใช้ Gotenberg",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2200,
+        520
+      ]
+    }
+  ],
+  "connections": {
+    "รับข้อมูลลูกค้า": {
+      "main": [
+        [
+          {
+            "node": "ตั้งค่า Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ตั้งค่า Prompt": {
+      "main": [
+        [
+          {
+            "node": "หา timezone จากเมืองเกิด",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "หา timezone จากเมืองเกิด": {
+      "main": [
+        [
+          {
+            "node": "เตรียมพารามิเตอร์",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "เตรียมพารามิเตอร์": {
+      "main": [
+        [
+          {
+            "node": "ดึงชาร์ท Bodygraph",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ดึงชาร์ท Bodygraph": {
+      "main": [
+        [
+          {
+            "node": "แยกข้อมูลชาร์ท",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "แยกข้อมูลชาร์ท": {
+      "main": [
+        [
+          {
+            "node": "สร้างรายการ 14 บท",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "สร้างรายการ 14 บท": {
+      "main": [
+        [
+          {
+            "node": "Claude เขียนบท",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude เขียนบท": {
+      "main": [
+        [
+          {
+            "node": "ดึงข้อความบท",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ดึงข้อความบท": {
+      "main": [
+        [
+          {
+            "node": "รวมเล่มเป็น HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "รวมเล่มเป็น HTML": {
+      "main": [
+        [
+          {
+            "node": "แปลง HTML เป็น PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "แปลง HTML เป็น PDF": {
+      "main": [
+        [
+          {
+            "node": "ส่งอีเมลลูกค้า",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ส่งอีเมลลูกค้า": {
+      "main": [
+        [
+          {
+            "node": "บันทึกออเดอร์",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveExecutionProgress": true
+  },
+  "active": false
+}
